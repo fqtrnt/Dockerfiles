@@ -1,0 +1,5 @@
+jdk/
+mysql/
+.DS_Store
+*.zip
+sonarqube*/

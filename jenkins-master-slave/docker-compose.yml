@@ -1,0 +1,31 @@
+version: '2'
+services:
+  jm:
+    image: jenkins:latest
+    ports:
+      - 8091:8080
+      - 50000:50000
+  js1:
+    image: jenkins:latest
+    ports:
+      - 8092:8080
+      - 50001:50000
+    volumes:
+      - ./slave:/var/jenkins_home/slave 
+    depends_on:
+      - jm
+    links:
+      - jm
+    command: "/var/jenkins_home/slave/wait-for-it.sh jm:50000 -- java -jar /var/jenkins_home/slave/slave.jar -jnlpUrl http://jm:8080/computer/slave1/slave-agent.jnlp -secret a1a08c226f7b91b1cb0cd3ec4972caef80b8695f5e424db4ee7650c00dc953ad"
+  js2:
+    image: jenkins:latest
+    ports:
+      - 8093:8080
+      - 50002:50000
+    volumes:
+      - ./slave:/var/jenkins_home/slave 
+    depends_on:
+      - jm
+    links:
+      - jm
+    command: "/var/jenkins_home/slave/wait-for-it.sh jm:50000 -- java -jar /var/jenkins_home/slave/slave.jar -jnlpUrl http://jm:8080/computer/slave2/slave-agent.jnlp -secret 5cc004f19a5e9da34bc099086a571a05b669d7ebb8000032c96fe5a6e2b36313"

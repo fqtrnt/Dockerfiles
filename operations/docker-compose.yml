@@ -1,0 +1,52 @@
+db-server:
+#  build: ./mysql/
+  image: mysql:5.7
+  volumes:
+    - ./mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    - ./mysql/files/sql:/docker-entrypoint-initdb.d
+    - ./mysql/data:/var/lib/mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=admin
+redmine:
+  build: ./redmine/
+  volumes:
+    - ./redmine/files:/usr/src/redmine/files
+  ports:
+    - 3000:3000
+  environment:
+    - REDMINE_DB_MYSQL=db-server
+    - MYSQL_ENV_MYSQL_USER=redmine
+    - MYSQL_ENV_MYSQL_PASSWORD=redmine
+    - MYSQL_ENV_MYSQL_DATABASE=redmine
+  links:
+    - db-server
+#jenkins:
+#  build: ./jenkins/
+#  volumes:
+#    - /home/young/dev/jdk/linux/8:/usr/local/jdk
+#    - ./jenkins/workspace:/var/jenkins_home
+#    - /home/young/dev/gradle:/var/gradle_home
+#    - /home/young/dev/mvn:/var/maven_home
+#    - /home/young/.gradle/:/var/.gradle
+#    - /home/young/.m2/:/var/jenkins_home/.m2
+#  ports:
+#    - 8090:8080
+#    - 50000:50000
+sonar:
+#  build: ./sonar/
+  image: sonar:1.0
+  volumes:
+    - /media/e/docker/newWorkspace/sonar/sonarqube-5.6:/var/sonar_home
+    - /home/young/dev/jdk/linux/8:/usr/local/jdk
+  ports:
+    - 9000:9000
+    - 9001:9001
+  links:
+    - db-server
+#nexus:
+#  build: ./nexus/
+#  volumes:
+#    - /media/e/docker/nexus/nexus-3.0.1-01/:/var/nexus_home
+#    - /home/young/dev/jdk/linux/8:/usr/local/jdk
+#  ports:
+#    - 9081:8081
